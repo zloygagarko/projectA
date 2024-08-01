@@ -1,5 +1,5 @@
 provider "aws" {
-    region = "us-east-1"
+    region = "us-east-2"
 }
 
 # resource "aws_key_pair" "Vlad1" {
@@ -122,4 +122,3 @@ resource "aws_route_table_association" "private_routes" {
 }
 
 #=====================================================================================
-
