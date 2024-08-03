@@ -139,3 +139,47 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4_3" {
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
 }
+
+#==============================IAM_S3_role==============================
+
+resource "aws_iam_role" "s3_role" {
+  name = "test_role"
+  assume_role_policy = jsonencode({
+    Version: "2012-10-17",
+    Statement: [
+    {
+      Effect: "Allow",
+      Principal: "*",
+      Action: "s3:*",
+      Resource: [
+        "arn:aws:s3:::zloygagarko",
+        "arn:aws:s3:::zloygagarko/*"
+      ]
+    }
+  ]
+  })
+
+  tags = {
+    tag-key = "name-s3_role"
+  }
+}
+
+resource "aws_iam_role_policy" "s3_role_policy" {
+  name   = "test_role_policy"
+  role   = aws_iam_role.s3_role.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = "s3:*",
+        Resource = [
+          "arn:aws:s3:::zloygagarko",
+          "arn:aws:s3:::zloygagarko/*"
+        ]
+      }
+    ]
+  })
+}
+
+#====================================================================================
