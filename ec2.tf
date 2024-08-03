@@ -20,12 +20,12 @@ resource "aws_launch_template" "example" {
   }
 }
 
-resource "aws_instance" "example" {
-  launch_template {
-    id      = aws_launch_template.example.id
-    version = "$Latest"
-  }
-}
+# resource "aws_instance" "example" {
+#   launch_template {
+#     id      = aws_launch_template.example.id
+#     version = "$Latest"
+#   }
+# }
 
 #===================================Sec_group===========================
 
@@ -39,13 +39,13 @@ resource "aws_security_group" "alb_sec" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_HTTPS_ipv4" {
-  security_group_id = aws_security_group.alb_sec.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443
-}
+# resource "aws_vpc_security_group_ingress_rule" "allow_HTTPS_ipv4" {
+#   security_group_id = aws_security_group.alb_sec.id
+#   cidr_ipv4         = "0.0.0.0/0"
+#   from_port         = 443
+#   ip_protocol       = "tcp"
+#   to_port           = 443
+# }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_HTTP_ipv4" {
   security_group_id = aws_security_group.alb_sec.id
@@ -74,12 +74,28 @@ resource "aws_security_group" "ec2_sec" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_HTTPS_ipv4_2" {
+# resource "aws_vpc_security_group_ingress_rule" "allow_HTTPS_ipv4_2" {
+#   security_group_id = aws_security_group.ec2_sec.id
+#   referenced_security_group_id = aws_security_group.alb_sec.id
+#   from_port         = 443
+#   ip_protocol       = "tcp"
+#   to_port           = 443
+# }
+
+resource "aws_vpc_security_group_ingress_rule" "allow_HTTP" {    #TEMPORARY RULE
   security_group_id = aws_security_group.ec2_sec.id
-  referenced_security_group_id = aws_security_group.alb_sec.id
-  from_port         = 443
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
   ip_protocol       = "tcp"
-  to_port           = 443
+  to_port           = 80
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_SSH_ipv4" {    #TEMPORARY RULE
+  security_group_id = aws_security_group.ec2_sec.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 22
+  ip_protocol       = "tcp"
+  to_port           = 22
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_HTTP_ipv4_2" {
@@ -98,4 +114,28 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4_2" {
   ip_protocol       = "-1"
 }
 
-#=========================================
+#===============================================================================
+
+resource "aws_security_group" "rds_sec" {
+  name        = "rds_sec_group"
+  description = "Allow only inbound traffic from ec2_sec_group and all outbound traffic"
+  vpc_id      = aws_vpc.main.id
+  tags = {
+    Name = "allow_mysql_from_ec2"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_mysql_aurora" {
+  security_group_id = aws_security_group.rds_sec.id
+  referenced_security_group_id = aws_security_group.ec2_sec.id
+  from_port         = 3306
+  ip_protocol       = "tcp"
+  to_port           = 3306
+}
+
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4_3" {
+  security_group_id = aws_security_group.rds_sec.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
