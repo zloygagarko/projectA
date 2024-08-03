@@ -142,44 +142,103 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4_3" {
 
 #==============================IAM_S3_role==============================
 
-resource "aws_iam_role" "s3_role" {
-  name = "test_role"
-  assume_role_policy = jsonencode({
-    Version: "2012-10-17",
-    Statement: [
-    {
-      Effect: "Allow",
-      Principal: "*",
-      Action: "s3:*",
-      Resource: [
-        "arn:aws:s3:::zloygagarko",
-        "arn:aws:s3:::zloygagarko/*"
-      ]
-    }
-  ]
-  })
+# resource "aws_iam_role" "ec2_s3_role" {
+#   name = "ec2_role"
+#   assume_role_policy = jsonencode({
+#     Version: "2012-10-17",
+#     Statement: [
+#     {
+#       Effect: "Allow"
+#       Principal = {
+#         Service = "ec2.amazonaws.com"
+#       }
+#       Action: "sts:AssumeRole"
+#     }
+#   ]
+#   })
 
-  tags = {
-    tag-key = "name-s3_role"
-  }
-}
+#   tags = {
+#     tag-key = "name-s3_role"
+#   }
+# }
 
-resource "aws_iam_role_policy" "s3_role_policy" {
-  name   = "test_role_policy"
-  role   = aws_iam_role.s3_role.id
-  policy = jsonencode({
-    Version = "2012-10-17",
+# resource "aws_iam_role_policy" "s3_role_policy" {
+#   name   = "test_role_policy"
+#   role   = aws_iam_role.ec2_s3_role.id
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Effect = "Allow"
+#         Action = "s3:*"
+#         Data = [
+#           "arn:aws:s3:::zloygagarko",
+#           "arn:aws:s3:::zloygagarko/*"
+#         ]
+#       }
+#     ]
+#   })
+# }
+
+
+# data "aws_s3_bucket" "s3_terraform" {
+#   bucket = "zloygagarko"
+# }
+
+resource "aws_iam_policy" "s3policy" {
+  name        = "s3policy"
+  description = "Policy for S3 access"
+  policy      = jsonencode({
+    Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow",
-        Action = "s3:*",
-        Resource = [
-          "arn:aws:s3:::zloygagarko",
-          "arn:aws:s3:::zloygagarko/*"
-        ]
+        Sid     = "Stmt1722696952726"
+        Effect  = "Allow"
+        Action  = "s3:GetObject"
+        Resource = "arn:aws:s3:::zloygagarko/"  # Note: Added / to include objects in the bucket
       }
     ]
   })
 }
+
+resource "aws_iam_role_policy_attachment" "example_policy_attachment" {
+  role       = aws_iam_role.iamrole.name
+  policy_arn  = aws_iam_policy.s3policy.arn
+}
+
+resource "aws_iam_role" "iamrole" {
+  name = "iamrole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_instance_profile" "s3_role_access" {
+  name = "s3_profile"
+  role = aws_iam_role.iamrole.name
+}
+
+# data "aws_iam_policy_document" "assume_role" {
+#   statement {
+#     effect = "Allow"
+
+#     principals {
+#       type        = "Service"
+#       identifiers = ["ec2.amazonaws.com"]
+#     }
+
+#     actions = ["sts:AssumeRole"]
+#   }
+# }
 
 #====================================================================================
