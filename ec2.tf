@@ -114,7 +114,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4_2" {
   ip_protocol       = "-1"
 }
 
-#===============================================================================
+#=================================
 
 resource "aws_security_group" "rds_sec" {
   name        = "rds_sec_group"
@@ -151,8 +151,13 @@ resource "aws_iam_policy" "iam_s3_policy" {
       {
         Sid     = "Stmt1722696952726"
         Effect  = "Allow"
-        Action  = "s3:GetObject"
-        Resource = "arn:aws:s3:::zloygagarko/*"
+        Action  = [
+          "s3:ListAllMyBuckets",
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket"
+        ]
+        Resource = "*"
       }
     ]
   })
