@@ -157,7 +157,10 @@ resource "aws_iam_policy" "iam_s3_policy" {
           "s3:GetObject",
           "s3:ListBucket"
         ]
-        Resource = "*"
+        Resource = [
+                "arn:aws:s3:::zloygagarko",
+                "arn:aws:s3:::zloygagarko/*"
+            ]
       }
     ]
   })
