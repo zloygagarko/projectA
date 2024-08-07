@@ -86,7 +86,7 @@ resource "aws_route53_zone" "primary" {
 
 resource "aws_route53_record" "record" {
   zone_id = aws_route53_zone.primary.id
-  name = "www.zloygagarko.link"
+  name = "wordpress.zloygagarko.link"
   type = "CNAME"
   ttl = 300
   records = [aws_lb.alb.dns_name]
