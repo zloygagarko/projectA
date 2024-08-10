@@ -13,3 +13,7 @@ output "public_subnet_ids" {
 output "private_subnet_ids" {
     value = aws_subnet.private_subnets[*].id
 }
+
+# output "instance_ids" {
+#     value = aws_instance.example[*].id
+# }
