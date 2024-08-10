@@ -47,4 +47,7 @@ variable "r53_zone_id"{
 
 #==========================Sec_group_vars=============================
 
+variable "sec_group_name" {
+  default = "allow_http_https"
+}
 
