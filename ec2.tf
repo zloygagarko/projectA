@@ -35,21 +35,13 @@ resource "aws_instance" "user_data" {
 
 resource "aws_security_group" "alb_sec" {
   name        = "alb_sec_group"
-  description = "Allow HTTP and HTTPS inbound traffic and all outbound traffic"
+  description = "Allow HTTP inbound traffic and all outbound traffic"
   vpc_id      = aws_vpc.main.id
 
   tags = {
     Name = "allow_http_https"
   }
 }
-
-# resource "aws_vpc_security_group_ingress_rule" "allow_HTTPS_ipv4" {
-#   security_group_id = aws_security_group.alb_sec.id
-#   cidr_ipv4         = "0.0.0.0/0"
-#   from_port         = 443
-#   ip_protocol       = "tcp"
-#   to_port           = 443
-# }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_HTTP_ipv4" {
   security_group_id = aws_security_group.alb_sec.id
@@ -71,28 +63,13 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
 
 resource "aws_security_group" "ec2_sec" {
   name        = "ec2_sec_group"
-  description = "Allow HTTP and HTTPS inbound traffic from ALB and all outbound traffic"
+  description = "Allow HTTP inbound HTTP traffic from ALB and all outbound traffic"
   vpc_id      = aws_vpc.main.id
   tags = {
     Name = "allow_http_https_from_alb"
   }
 }
 
-# resource "aws_vpc_security_group_ingress_rule" "allow_HTTP" {    #TEMPORARY RULE
-#   security_group_id = aws_security_group.ec2_sec.id
-#   cidr_ipv4         = "0.0.0.0/0"
-#   from_port         = 80
-#   ip_protocol       = "tcp"
-#   to_port           = 80
-# }
-
-# resource "aws_vpc_security_group_ingress_rule" "allow_SSH_ipv4" {    #TEMPORARY RULE
-#   security_group_id = aws_security_group.ec2_sec.id
-#   cidr_ipv4         = "0.0.0.0/0"
-#   from_port         = 22
-#   ip_protocol       = "tcp"
-#   to_port           = 22
-# }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_HTTP_ipv4_2" {
   security_group_id = aws_security_group.ec2_sec.id
@@ -101,7 +78,6 @@ resource "aws_vpc_security_group_ingress_rule" "allow_HTTP_ipv4_2" {
   ip_protocol       = "tcp"
   to_port           = 80
 }
-
 
 
 resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4_2" {
@@ -136,56 +112,3 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4_3" {
   ip_protocol       = "-1"
 }
 
-#==============================IAM_S3_role==============================
-
-# resource "aws_iam_policy" "iam_s3_policy" {
-#   name        = "s3_policy"
-#   description = "Policy for S3 access"
-#   policy      = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Sid     = "Stmt1722696952726"
-#         Effect  = "Allow"
-#         Action  = [
-#           "s3:ListAllMyBuckets",
-#           "s3:PutObject",
-#           "s3:GetObject",
-#           "s3:ListBucket"
-#         ]
-#         Resource = [
-#                 "*"
-#             ]
-#       }
-#     ]
-#   })
-# }
-
-# resource "aws_iam_role_policy_attachment" "example_policy_attachment" {
-#   role       = aws_iam_role.iam_s3_role.name
-#   policy_arn  = aws_iam_policy.iam_s3_policy.arn
-# }
-
-# resource "aws_iam_role" "iam_s3_role" {
-#   name = "s3_role"
-
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Effect = "Allow"
-#         Principal = {
-#           Service = "ec2.amazonaws.com"
-#         }
-#         Action = "sts:AssumeRole"
-#       }
-#     ]
-#   })
-# }
-
-# resource "aws_iam_instance_profile" "s3_role_access" {
-#   name = "s3_profile"
-#   role = aws_iam_role.iam_s3_role.name
-# }
-
-#====================================================================================

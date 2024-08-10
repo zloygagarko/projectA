@@ -20,12 +20,6 @@ resource "aws_lb" "alb" {
 
   enable_deletion_protection = true
 
-#   access_logs {
-#     bucket  = aws_s3_bucket.lb_logs.id
-#     prefix  = "test-lb"
-#     enabled = true
-#   }
-
   tags = {
     Environment = var.env
   }
@@ -35,7 +29,6 @@ resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_lb.alb.arn
   port = "80"
   protocol = "HTTP"
-    # certificate_arn   = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"
 
   default_action {
     type = "forward"
@@ -62,16 +55,14 @@ resource "aws_autoscaling_group" "asg" {
   health_check_type  = "EC2"
   health_check_grace_period = 300
   target_group_arns = [aws_lb_target_group.target_group.arn]
+
+  tag {
+    key                 = "Name"
+    value               = "ASG-instance"
+    propagate_at_launch = true
+   }
+
 }
-
-
-#   tag {
-#     key                 = "Name"
-#     value               = "example"
-#     propagate_at_launch = true
-#    }
-
-# }
 
 # resource "aws_autoscaling_policy" "scale_up" {
 #   name = "scale-up"
@@ -91,23 +82,9 @@ resource "aws_autoscaling_group" "asg" {
 
 #======================================Route_53======================================
 
-# resource "aws_route53_record" "wordpress" {
-#   zone_id = aws_route53_zone.primary.id
-#   name = "wordpress.zloygagarko.link"
-#   type = "A"
-#   alias {
-#     name = aws_lb.alb.dns_name
-#     zone_id = aws_lb.alb.zone_id
-#     evaluate_target_health = true
-#   }
-# }
-
-# resource "aws_route53_zone" "primary" {
-#   name = "zloygagarko.link"
-# }
 
 resource "aws_route53_record" "writer" {
-  zone_id = "Z043439638MBO06EJFACR"
+  zone_id = var.r53_zone_id
   name = "writer.zloygagarko.link"
   type = "CNAME"
   ttl = 300

@@ -41,24 +41,9 @@ variable "key_name" {
   default = "Vlad1"
 }
 
-# variable "security_group_names" {
-#   default = ""
-# }
-
-# variable "subnet_id" {
-#   description = "The subnet ID to associate with the instance"
-#   type        = string
-# }
-
-# variable "instance_name" {
-#   description = "The name tag to apply to the instance"
-#   type        = string
-# }
-
-# variable "instance_count" {
-#   description = "The number of instances to launch"
-#   type        = number
-# }
+variable "r53_zone_id"{
+  default = "Z043439638MBO06EJFACR"
+}
 
 #==========================Sec_group_vars=============================
 

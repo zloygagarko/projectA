@@ -14,6 +14,6 @@ output "private_subnet_ids" {
     value = aws_subnet.private_subnets[*].id
 }
 
-# output "instance_ids" {
-#     value = aws_instance.example[*].id
-# }
+output "instance_id" {
+    value = aws_instance.user_data.id
+}
