@@ -30,7 +30,7 @@ variable "launch_template_name" {
 }
 
 variable "image_id" {
-  default = "ami-00db8dadb36c9815e"
+  default = "ami-0a31f06d64a91614b"
 }
 
 variable "instance_type" {

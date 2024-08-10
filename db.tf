@@ -13,13 +13,13 @@ resource "aws_db_subnet_group" "db_group" {
 
 resource "aws_rds_cluster" "wordpress" {
   cluster_identifier        = "rds-cluster"
-#   availability_zones        = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  database_name = "wordpress"
   engine                    = "mysql"
   engine_version = "8.0.32"
   db_cluster_instance_class = "db.m5d.large"
   storage_type              = "gp3"
+  iops = 3000
   allocated_storage         = 20
-#   iops                      = 3000
   master_username           = "admin"
   master_password           = "Admin12345"
   vpc_security_group_ids  = [aws_security_group.rds_sec.id]

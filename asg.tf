@@ -7,7 +7,7 @@ resource "aws_lb_target_group" "target_group" {
 
 # resource "aws_lb_target_group_attachment" "tg_attachment" {
 #   target_group_arn = aws_lb_target_group.target_group.arn
-#   target_id = aws_instance.example.id
+#   target_id = aws_instance.user_data.id
 #   port = 80
 # }
 
@@ -56,37 +56,59 @@ resource "aws_autoscaling_group" "asg" {
     aws_subnet.private_subnets[2].id
   ]
 
-  min_size           = 1
+  min_size           = 0
   max_size           = 99
-  desired_capacity   = 1
+  desired_capacity   = 0
   health_check_type  = "EC2"
   health_check_grace_period = 300
   target_group_arns = [aws_lb_target_group.target_group.arn]
-
-
-  tag {
-    key                 = "Name"
-    value               = "example"
-    propagate_at_launch = true
-   }
-
 }
 
-# resource "aws_autoscaling_policy" "asg_policy" {
-#   autoscaling_group_name = "asg"
-#   name = "asg_policy_1"
-#   policy_type = "TargetTrackingScaling"
-#   target_tracking_configuration {
-#     target_value = 55
 
+#   tag {
+#     key                 = "Name"
+#     value               = "example"
+#     propagate_at_launch = true
+#    }
+
+# }
+
+# resource "aws_autoscaling_policy" "scale_up" {
+#   name = "scale-up"
+#   scaling_adjustment = 1
+#   adjustment_type = "ChangeInCapacity"
+#   cooldown = 60
+#   autoscaling_group_name = aws_autoscaling_group.asg.name
+# }
+
+# resource "aws_autoscaling_policy" "scale_down" {
+#   name = "scale-down"
+#   scaling_adjustment = -1
+#   adjustment_type = "ChangeInCapacity"
+#   cooldown = 60
+#   autoscaling_group_name = aws_autoscaling_group.asg.name
+# }
+
+#======================================Route_53======================================
+
+# resource "aws_route53_record" "wordpress" {
+#   zone_id = aws_route53_zone.primary.id
+#   name = "wordpress.zloygagarko.link"
+#   type = "A"
+#   alias {
+#     name = aws_lb.alb.dns_name
+#     zone_id = aws_lb.alb.zone_id
+#     evaluate_target_health = true
 #   }
-resource "aws_route53_zone" "primary" {
-  name = "zloygagarko.link"
-}
+# }
 
-resource "aws_route53_record" "record" {
-  zone_id = aws_route53_zone.primary.id
-  name = "wordpress.zloygagarko.link"
+# resource "aws_route53_zone" "primary" {
+#   name = "zloygagarko.link"
+# }
+
+resource "aws_route53_record" "writer" {
+  zone_id = "Z043439638MBO06EJFACR"
+  name = "writer.zloygagarko.link"
   type = "CNAME"
   ttl = 300
   records = [aws_lb.alb.dns_name]

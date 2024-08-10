@@ -13,6 +13,8 @@ data "aws_availability_zones" "available" {}
 
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr
+  enable_dns_support = true
+  enable_dns_hostnames = true
     tags = {
     Name = "${var.env}-vpc"
   }
@@ -64,23 +66,6 @@ resource "aws_eip" "nat" {
     Name = "${var.env}-nat-gw-${count.index + 1}"
   }
 }
-
-# resource "aws_network_interface" "multi-ip" {
-#   subnet_id   = aws_subnet.main.id
-#   private_ips = ["10.0.0.10", "10.0.0.11"]
-# }
-
-# resource "aws_eip" "one" {
-#   domain                    = "vpc"
-#   network_interface         = aws_network_interface.multi-ip.id
-#   associate_with_private_ip = "10.0.0.10"
-# }
-
-# resource "aws_eip" "two" {
-#   domain                    = "vpc"
-#   network_interface         = aws_network_interface.multi-ip.id
-#   associate_with_private_ip = "10.0.0.11"
-# }
 
 resource "aws_nat_gateway" "nat" {
   count = length(var.private_subnet_cidrs)
