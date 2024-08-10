@@ -62,4 +62,7 @@ variable "key_name" {
 
 #==========================Sec_group_vars=============================
 
+variable "sec_group_name" {
+  default = "allow_http_https"
+}
 
